@@ -1,0 +1,66 @@
+.container {
+  background-color: #f3f3f3;
+  height: 600px;
+  width: 375px;
+}
+.cabecalho {
+  width: 100%;
+  height: 80px;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+}
+.cabecalho ion-icon {
+  font-size: 40px;
+}
+.cabecalho img {
+  width: 75px;
+  height: 53px;
+}
+.logo {
+  width: 75px;
+  height: 53px;
+  margin-left: 22px;
+}
+.icone {
+  margin-right: 22px;
+}
+.menu-inferior {
+  width: 100%;
+  height: 80px;
+  background-color: #ffffff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.05);
+}
+.digitar-texto {
+  height: 80px;
+}
+.menu-inferior input {
+  width: 75%;
+  height: 25px;
+  border: none;
+  margin-top: 2px;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  font-style: italic;
+  color: #000000;
+  margin-left: 17px;
+  margin-top: 25px;
+}
+.icone-baixo ion-icon {
+  margin-right: 18px;
+  font-size: 33px;
+}
