@@ -1,6 +1,7 @@
 let mensagem = [];
 let caixaDeMensagens;
 let input;
+let nome;
 inicializarProjeto();
 function inicializarProjeto() {
   const iniciar = document.querySelector(".container");
@@ -39,22 +40,26 @@ function login() {
   promise.catch(deuRuim);
 }
 function verificaOnline() {
-  setInterval(verificando, 5000);
-  setInterval(buscarMensagens, 3000);
+  const cincoSegundos = 5000;
+  const tresSegundos = 3000;
+  setInterval(verificando, cincoSegundos);
+  setInterval(buscarMensagens, tresSegundos);
 }
 function verificando() {
-  const promise = axios.post(
-    "https://mock-api.driven.com.br/api/v6/uol/status",
-    { name: nome }
-  );
+  axios.post("https://mock-api.driven.com.br/api/v6/uol/status", {
+    name: nome,
+  });
 }
 function deuRuim(error) {
-  if (error.response.status === 400) {
+  const quatrocentos = 400;
+  if (error.response.status === quatrocentos) {
     login();
   }
 }
 function buscarMensagens() {
-  promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
+  const promise = axios.get(
+    "https://mock-api.driven.com.br/api/v6/uol/messages"
+  );
 
   promise.then(mandarMensagem);
 }
@@ -73,6 +78,7 @@ function mandarMensagem(message) {
   
       <div class="message ">${mensagem[i].text}</div>
     </div>`;
+      caixaDeMensagens.lastChild.scrollIntoView();
     }
     if (mensagem[i].type === "message") {
       caixaDeMensagens.innerHTML += `
@@ -85,10 +91,13 @@ function mandarMensagem(message) {
   
       <div class="message ">${mensagem[i].text}</div>
     </div>`;
+      caixaDeMensagens.lastChild.scrollIntoView();
     }
     if (
       mensagem[i].type === "private_message" &&
-      (mensagem[i].to === nome || mensagem[i].to === "Todos")
+      (mensagem[i].to === nome ||
+        mensagem[i].to === "Todos" ||
+        mensagem[i].from === nome)
     ) {
       caixaDeMensagens.innerHTML += `
       <div class="mensagem mensagem-privada" data-test="message">
@@ -100,12 +109,12 @@ function mandarMensagem(message) {
     
         <div class="message ">${mensagem[i].text}</div>
       </div>`;
+      caixaDeMensagens.lastChild.scrollIntoView();
     }
-    caixaDeMensagens.lastChild.scrollIntoView();
   }
 }
 function enviarMensagem() {
-  let texto = input.value;
+  const texto = input.value;
 
   console.log(texto);
 
@@ -122,10 +131,10 @@ function enviarMensagem() {
   promise.then(mensagemEnviada);
   promise.catch(mensagemNaoEnviada);
 }
-function mensagemEnviada(enviou) {
+function mensagemEnviada() {
   buscarMensagens();
   input.value = "";
 }
-function mensagemNaoEnviada(naoEnviou) {
+function mensagemNaoEnviada() {
   window.location.reload();
 }
