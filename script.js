@@ -1,7 +1,7 @@
-inicializarProjeto();
 let mensagem = [];
-let caixaDeMensagens = document.querySelector(".mensagens");
-
+let caixaDeMensagens;
+let input;
+inicializarProjeto();
 function inicializarProjeto() {
   const iniciar = document.querySelector(".container");
   iniciar.innerHTML = `<div class="cabecalho">
@@ -12,14 +12,18 @@ function inicializarProjeto() {
     <ion-icon name="people"></ion-icon>
   </div>
 </div>
+<div class="mensagens"></div>
 <div class="menu-inferior">
   <div class="digitar-texto">
-    <input type="text" value="" placeholder="Escreva aqui..." />
+    <input data-test="input-message" type="text" value="" placeholder="Escreva aqui..." />
   </div>
-  <div class="icone-baixo">
-    <ion-icon name="paper-plane-outline"></ion-icon>
+  <div class="icone-baixo" onclick="enviarMensagem()">
+    <ion-icon data-test="send-message" name="paper-plane-outline"></ion-icon>
   </div>
 </div>`;
+
+  caixaDeMensagens = document.querySelector(".mensagens");
+  input = document.querySelector("input");
 }
 
 login();
@@ -30,6 +34,7 @@ function login() {
     "https://mock-api.driven.com.br/api/v6/uol/participants",
     { name: nome }
   );
+  promise.then(verificaOnline);
 
   const participantes = axios.get(
     "https://mock-api.driven.com.br/api/v6/uol/participants"
@@ -37,30 +42,94 @@ function login() {
   console.log(participantes);
   promise.catch(deuRuim);
 }
+function verificaOnline(online) {
+  setInterval(verificando, 5000);
+}
+function verificando() {
+  const promise = axios.post(
+    "https://mock-api.driven.com.br/api/v6/uol/status",
+    { name: nome }
+  );
+}
 function deuRuim(error) {
   if (error.response.status === 400) {
     login();
   }
 }
-buscarMensagens();
+setInterval(buscarMensagens, 3000);
 function buscarMensagens() {
   promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
 
   promise.then(mandarMensagem);
 }
-function mandarMensagem(mesage) {
-  caixaDeMensagens = "";
-  mensagem = mesage.data;
+function mandarMensagem(message) {
+  console.log(message.data);
+  caixaDeMensagens.innerHTML = "";
+  mensagem = message.data;
 
-  console.log(mensagem);
+  for (let i = 0; i < mensagem.length; i++) {
+    if (mensagem[i].type === "status") {
+      caixaDeMensagens.innerHTML += `
+    <div class="mensagem entrada" data-test="message">
+      <div class="time ">(${mensagem[i].time})</div>
 
-  for (let i = 0; i < mensagem.length; i++) {}
+      <div class="user "><span>${mensagem[i].from}</span></div>
+  
+      <div class="message ">${mensagem[i].text}</div>
+    </div>`;
+    }
+    if (mensagem[i].type === "message") {
+      caixaDeMensagens.innerHTML += `
+    <div class="mensagem mensagem-normal" data-test="message">
+      <div class="time ">(${mensagem[i].time})</div>
 
-  caixaDeMensagens.innerHTML = `<div class="time">${mensagem.time}</div>
+      <div class="user "><span>${mensagem[i].from}</span> para</div>
+  
+      <div class="to ">${mensagem[i].to}:</div>
+  
+      <div class="message ">${mensagem[i].text}</div>
+    </div>`;
+    }
+    if (
+      mensagem[i].type === "private_message" &&
+      (mensagem[i].to === nome || mensagem[i].to === "Todos")
+    ) {
+      caixaDeMensagens.innerHTML += `
+      <div class="mensagem mensagem-privada" data-test="message">
+        <div class="time ">(${mensagem[i].time})</div>
+  
+        <div class="user "><span>${mensagem[i].from}</span> reservadamente para </div>
+    
+        <div class="to ">${mensagem[i].to}:</div>
+    
+        <div class="message ">${mensagem[i].text}</div>
+      </div>`;
+    }
+    caixaDeMensagens.lastChild.scrollIntoView();
+  }
+}
+function enviarMensagem() {
+  let texto = input.value;
 
-  <div class="user">${mensagem.user}</div>
+  console.log(texto);
 
-  <div class="to">${mensagem.to}</div>
+  const promise = axios.post(
+    "https://mock-api.driven.com.br/api/v6/uol/messages",
+    {
+      from: nome,
+      to: "Todos",
+      text: texto,
+      type: "message",
+    }
+  );
 
-  <div class="message">${mensagem.text}</div>`;
+  promise.then(mensagemEnviada);
+  promise.catch(mensagemNaoEnviada);
+}
+function mensagemEnviada(enviou) {
+  buscarMensagens();
+  input.value = "";
+}
+function mensagemNaoEnviada(naoEnviou) {
+  window.location.reload();
 }
