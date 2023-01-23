@@ -36,14 +36,11 @@ function login() {
   );
   promise.then(verificaOnline);
 
-  const participantes = axios.get(
-    "https://mock-api.driven.com.br/api/v6/uol/participants"
-  );
-  console.log(participantes);
   promise.catch(deuRuim);
 }
-function verificaOnline(online) {
+function verificaOnline() {
   setInterval(verificando, 5000);
+  setInterval(buscarMensagens, 3000);
 }
 function verificando() {
   const promise = axios.post(
@@ -56,7 +53,6 @@ function deuRuim(error) {
     login();
   }
 }
-setInterval(buscarMensagens, 3000);
 function buscarMensagens() {
   promise = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
 
